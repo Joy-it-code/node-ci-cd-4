@@ -184,6 +184,14 @@ pm2 start index.js --name "node-app"
 ```
 
 ## **🔍 Verify Deployment**
+## **Check if the App is Running On EC2 Instance**
+```
+pm2 list
+OR
+curl http://localhost:3000/
+```
+![](./img/3c.pm2.png)
+
 ✅ Check via Terminal
 ```
 curl http://<your-ec2-public-ip>:3000/
@@ -191,14 +199,17 @@ curl http://<your-ec2-public-ip>:3000/
 ![](./img/3a.curl.png)
 
 
-**Check in Browser**
+### **Check in Browser**
 ```
 http://<your-ec2-public-ip>:3000/
 ```
+![](./img/3b.browser.png)
+
 
 ## **Test the workflow**
 
 Push changes to the main branch and check the Actions tab in GitHub to monitor the deployment process.
+
 
 ## Conclusion
 This project automates CI/CD using GitHub Actions and AWS EC2, ensuring reliable deployments with testing across multiple environments. 🚀
