@@ -210,6 +210,16 @@ http://<your-ec2-public-ip>:3000/
 
 Push changes to the main branch and check the Actions tab in GitHub to monitor the deployment process.
 
+**✅ Final Check**
+
++ Go to GitHub → Actions and verify the workflow runs successfully.
++ Check your AWS EC2 instance after deployment:
+
+```
+curl http://98.81.255.24:3000/
+```
+If everything works, 🎉 your CI/CD pipeline is good to go!
+
 
 ## Conclusion
 This project automates CI/CD using GitHub Actions and AWS EC2, ensuring reliable deployments with testing across multiple environments. 🚀
