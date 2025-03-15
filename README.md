@@ -1,96 +1,78 @@
-# Node.js CI/CD Pipeline with GitHub Actions & AWS EC2
+# 🚀 Node.js CI/CD Pipeline with GitHub Actions & AWS EC2  
 
-## 🚀 Project Overview
+## 📌 Project Overview  
+This project demonstrates a **Continuous Integration and Continuous Deployment (CI/CD) pipeline** using **GitHub Actions** to automatically test, build, and deploy a Node.js application to an AWS EC2 instance.  
 
-This project implements a **Continuous Integration and Continuous Deployment (CI/CD)** pipeline using **GitHub Actions** to automate testing, building, and deploying a **Node.js** application.
+## Objective
++ Implement matrix builds to test across multiple versions/environments.
++ Optimize build dependencies with caching.
++ Integrate code quality checks (linting, static analysis).
 
-## 🏗️ Features
-- ✅ **Automated Testing** across **Node.js 18, 20, 21** & multiple OS.
-- ✅ **GitHub Actions CI/CD** workflow.
-- ✅ **Parallel Testing & Build Matrices** for faster execution.
-- ✅ **Deployment to AWS EC2** via SSH.
-- ✅ **Process Management with PM2**.
+## 📑 Table of Contents  
+- [📌 Project Overview](#-project-overview)  
+- [📦 Tech Stack](#-tech-stack)  
+- [⚙️ Setup Instructions](#️-setup-instructions)  
+- [🛠 GitHub Actions Workflow](#-github-actions-workflow)  
+- [📡 Deployment](#-deployment)  
+- [🧪 Running Tests](#-running-tests)  
+- [📝 Linting and Code Quality](#-linting-and-code-quality)  
+- [🚀 Future Improvements](#-future-improvements)  
+- [🙌 Contributing](#-contributing)  
 
-## 📂 **Project Structure**
-📦 node-ci-cd ├── 📂 tests # Unit & Integration Tests │ ├── app.test.js # App tests │ ├── unit.test.js # Unit tests ├── 📜 index.js # Main entry file ├── 📜 package.json # Dependencies & scripts ├── 📜 .github/workflows # CI/CD Workflow file └── 📜 README.md # Documentation
-
-
-## 🔹 Step 1: Understanding Build Matrices
-
-A build matrix in GitHub Actions allows you to run the same job across multiple configurations (e.g., different Node.js versions, operating systems, or dependency versions). This is useful for ensuring your application works in various environments.
-
-Why Use a Build Matrix?
-Test across multiple Node.js versions.
-Verify compatibility with different operating systems.
-Run tests in parallel, speeding up execution.
-
+## 📦 Tech Stack  
+- **Node.js** - Backend runtime  
+- **Express.js** - Web framework  
+- **Jest** - Testing framework  
+- **ESLint** - Code quality checker  
+- **PM2** - Process manager for Node.js  
+- **GitHub Actions** - CI/CD automation  
+- **AWS EC2** - Cloud hosting  
 
 ---
 
-## 🛠️ **Setup & Installation**
-###  **Clone the Repository**
-
+## ⚙️ Setup Instructions  
++ **Create and Initialize The Repository**
 ```
-git init
-cd node-ci-cd2
+mkdir node-ci-cd-3
+cd node-ci-cd-3
+git remote add origin <repository-URL>
+git push -u origin main
 ```
-![](./img/1b.repo.png)
-![](./img/1a.init.png)
+![](./img/1a.repo.png)
+![](./img/1b.init.png)
 
-
-**Install Dependencies**
+## Install Dependencies
 ```
 npm install
 ```
 
-+ **Run the Application Locally**
+ Set Up Environment Variables
+Create a .env file in the project root:
+
 ```
-node index.js
-```
-or
-```
-pm2 start index.js --name "node-app"
+PORT=3000
+DATABASE_URL=mongodb://localhost:27017/mydatabase
 ```
 
-![](./img/2a.nodes.png)
-
-+ **On Browser:**
+ Run the Application Locally
 ```
-http://localhost:3000
+npm start
 ```
-![](./img/2c.localhost.png)
+Visit: http://localhost:3000
 
-+ **Run Tests**
-```
-npm test
-```
-![](./img/2b.npm.png)
-
-
-✅ GitHub Actions CI/CD Workflow
-This workflow:
-
-+ Runs tests across Node.js 18, 20, and 21.
-+ Executes tests on Ubuntu, macOS, and Windows.
-+ Deploys to AWS EC2 only if all tests pass.
-
-## **Parallel and Matrix Builds:**
-Test across multiple Node.js versions:
-```
- steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-```
-+ Runs npm test in 9 environments (3 Node.js versions × 3 OS).
+🛠 GitHub Actions Workflow
+📌 Features of CI/CD Pipeline:
+✅ Matrix Builds: Tests on Node.js 16.x, 18.x, 20.x
+✅ Automatic Linting: Runs ESLint on all commits
+✅ Automated Testing: Executes unit tests before deployment
+✅ Caching: Optimized dependency management
+✅ EC2 Deployment: Deploys only if all checks pass
 
 
-## Updated GitHub Actions Workflow
-Update .github/workflows/deploy.yml:
+## 🛠 Step 1: Modify GitHub Actions Workflow to Support Matrix Builds
+Matrix builds allow you to run your CI/CD pipeline across multiple Node.js versions in parallel.
+
+📜 GitHub Actions Workflow (.github/workflows/deploy.yml)
 ```
 name: Deploy to AWS EC2
 
@@ -100,131 +82,182 @@ on:
       - main
 
 jobs:
-  test:
-    name: Run Tests on Multiple Environments
-    runs-on: ${{ matrix.os }}
-
+  build-and-test:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18, 20, 21]
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: [16.x, 18.x, 20.x] # Test across multiple Node.js versions
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-      - name: Set up Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
+    - name: Set up Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm' # Enables caching for dependencies
 
-      - name: Install Dependencies
-        run: npm ci
+    - name: Install Dependencies
+      run: npm ci
 
-      - name: Run Tests
-        run: npm test
+    - name: Run Tests
+      run: npm test
 
   deploy:
-    name: Deploy to AWS EC2
+    needs: build-and-test # Ensures deployment only happens if tests pass
     runs-on: ubuntu-latest
-    needs: test # Ensure deployment happens only if tests pass
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+    - name: Set up SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ci-cd-key
+        chmod 600 ~/.ssh/ci-cd-key
+        ssh-keyscan 98.81.255.24 >> ~/.ssh/known_hosts
 
-      - name: Set up SSH Key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ci-cd-key
-          chmod 600 ~/.ssh/ci-cd-key
-          ssh-keyscan 44.201.195.99 >> ~/.ssh/known_hosts
-
-      - name: Deploy to AWS EC2
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd ~/node-ci-cd || git clone https://github.com/Joy-it-code/node-ci-cd-2.git ~/node-ci-cd2
-            cd ~/node-ci-cd-2
-            git pull origin main
-            npm install
-            pm2 restart index.js || pm2 start index.js --name "node-app"
+    - name: Deploy to AWS EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          cd ~/node-ci-cd-3 || git clone https://github.com/Joy-it-code/node-ci-cd.git ~/node-ci-cd-3
+          cd ~/node-ci-cd-3
+          git pull origin main
+          npm install
+          pm2 restart index.js || pm2 start index.js --name "node-app"
 ```
 
-## **✅ Parallel Execution**
-Each job runs simultaneously in different environments.
-This speeds up the testing process.
+## 📦 Step 2: Optimize Build Dependencies Using Caching
 
++ This helps to speeds up installation by caching node_modules.
++ If package-lock.json doesn’t change, it restores from cache
 
-## **✅ Deployment Step**
-```
-needs: test
-```
-+ Ensures deployment occurs ONLY if tests pass.
+🔹 2.1 Enable Dependency Caching
+**Modify the Node.js setup step in deploy.yml to use caching:**
 
-## **☁️ Deploying to AWS EC2**
-1️⃣ SSH into EC2
 ```
-ssh -i "/c/Users/xtojy/.ssh/ci-cd-key.pem" ubuntu@<your-ec2-public-ip>
-```
-
-### **Clone Repository**
-```
-git clone https://github.com/your-username/node-ci-cd.git
-cd node-ci-cd-2
+- name: Cache Node Modules
+  uses: actions/cache@v2
+  with:
+    path: ~/.npm
+    key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+    restore-keys: |
+      ${{ runner.os }}-node-
 ```
 
-### **Install Dependencies & Start App**
+## 🧹 Step 3: Integrate Code Quality Checks (Linting, Static Analysis)
+**🔹 3.1 Install ESLint Locally**
+Run the following in your project directory:
 ```
-npm install
-pm2 start index.js --name "node-app"
+npm install --save-dev eslint
 ```
 
-## **🔍 Verify Deployment**
-## **Check if the App is Running On EC2 Instance**
+**🔹 3.2 Initialize ESLint**
 ```
-pm2 list
-OR
-curl http://localhost:3000/
+npx eslint --init
 ```
-![](./img/3c.pm2.png)
 
-✅ Check via Terminal
+## Check if ESLint is working and Version
+```
+npx eslint --version
+npx eslint . --ext .js
+```
+
+## 📄 Step 4: Add Linting Step in GitHub Actions
+**Modify deploy.yml:**
+```
+    - name: Run Linter
+      run: npx eslint .
+```
+
+To auto-fix issues locally before committing:
+```
+npx eslint . --fix
+```
+
+## 📝 Step 5: Add .eslintrc.json Configuration
+**Modify .eslintrc.json:**
+```
+export default [
+  {
+    files: ["**/*.js"], // Specify the files to lint
+    languageOptions: {
+      ecmaVersion: "latest", // Set the ECMAScript version
+      globals: {
+        browser: true, // Add global variables
+        node: true,
+        es2021: true, // Other environments if needed
+      },
+    },
+    rules: {
+      "no-unused-vars": "warn", // Example of setting rules
+      "no-console": "off",
+      "semi": ["error", "always"],
+    },
+  },
+];
+```
+
+## 🔬 Step 6: Test Everything Locally Before Pushing
+🔹 6.1 Run Linter
+```
+npx eslint .
+```
+
+**Fix errors if needed:**
+
+```
+npx eslint . --fix
+```
+**To Verify:**
+```
+npx eslint .
+```
+
+🔹 6.2 Run Tests
+```
+npm test
+npm start
+```
+![](./img/2a.npm.test.png)
+
+
+🔹On Browser:
+```
+http://localhost:3000/
+```
+🔹 6.3 Check Build
+```
+npm run build
+```
+
+🔹 6.4 Push Changes
+```
+git add .
+git commit -m "Added matrix builds and linting"
+git push origin main
+```
+
+✅ Final Check
+Go to GitHub → Actions and verify:
+✅ Linting runs successfully
+✅ Tests pass on all Node.js versions
+✅ Deployment happens only if tests pass
+Check your AWS EC2 app:
 ```
 curl http://<your-ec2-public-ip>:3000/
 ```
-![](./img/3a.curl.png)
+🎉 If you see "Hello World!", your pipeline is working perfectly!
 
+Conclusion
 
-### **Check in Browser**
-```
-http://<your-ec2-public-ip>:3000/
-```
-![](./img/3b.browser.png)
-
-
-## **Test the workflow**
-
-Push changes to the main branch and check the Actions tab in GitHub to monitor the deployment process.
-
-**✅ Final Check**
-
-+ Go to GitHub → Actions and verify the workflow runs successfully.
-+ Check your AWS EC2 instance after deployment:
-
-```
-curl http://98.81.255.24:3000/
-```
-If everything works, 🎉 your CI/CD pipeline is good to go!
-
-
-## Conclusion
-This project automates CI/CD using GitHub Actions and AWS EC2, ensuring reliable deployments with testing across multiple environments. 🚀
-
+This project automates CI/CD for Node.js apps with GitHub Actions and AWS EC2, ensuring reliable and efficient delivery.
 
 **📌 Author: Joy Nwatuzor**
 
 **🎉 Happy Coding! 🚀**
+
+
