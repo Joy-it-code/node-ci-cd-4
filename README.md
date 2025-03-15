@@ -270,8 +270,8 @@ curl http://<your-ec2-public-ip>:3000/
 ```
 🎉 If you see "Hello World!", your pipeline is working perfectly!
 
-## Conclusion
 
+## Conclusion
 This project automates CI/CD for Node.js apps with GitHub Actions and AWS EC2, ensuring reliable and efficient delivery.
 
 **📌 Author: Joy Nwatuzor**
