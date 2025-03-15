@@ -46,7 +46,7 @@ git push -u origin main
 npm install
 ```
 
- Set Up Environment Variables
+## Set Up Environment Variables
 Create a .env file in the project root:
 
 ```
@@ -54,25 +54,31 @@ PORT=3000
 DATABASE_URL=mongodb://localhost:27017/mydatabase
 ```
 
- Run the Application Locally
+**Run the Application Locally**
 ```
 npm start
 ```
 Visit: http://localhost:3000
 
-🛠 GitHub Actions Workflow
-📌 Features of CI/CD Pipeline:
+
+## 🛠 GitHub Actions Workflow
+
+### 📌 Features of CI/CD Pipeline:
 ✅ Matrix Builds: Tests on Node.js 16.x, 18.x, 20.x
+
 ✅ Automatic Linting: Runs ESLint on all commits
+
 ✅ Automated Testing: Executes unit tests before deployment
+
 ✅ Caching: Optimized dependency management
+
 ✅ EC2 Deployment: Deploys only if all checks pass
 
 
 ## 🛠 Step 1: Modify GitHub Actions Workflow to Support Matrix Builds
 Matrix builds allow you to run your CI/CD pipeline across multiple Node.js versions in parallel.
 
-📜 GitHub Actions Workflow (.github/workflows/deploy.yml)
+## 📜 GitHub Actions Workflow (.github/workflows/deploy.yml)
 ```
 name: Deploy to AWS EC2
 
@@ -135,7 +141,8 @@ jobs:
 + This helps to speeds up installation by caching node_modules.
 + If package-lock.json doesn’t change, it restores from cache
 
-🔹 2.1 Enable Dependency Caching
+## 🔹 2.1 Enable Dependency Caching
+
 **Modify the Node.js setup step in deploy.yml to use caching:**
 
 ```
@@ -187,6 +194,7 @@ npx eslint . --fix
     "@babel/preset-env": "^7.26.9",
     "@eslint/js": "^9.22.0",
     "babel-jest": "^29.7.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.57.1",
     "globals": "^16.0.0",
     "jest": "^29.7.0",
@@ -195,7 +203,8 @@ npx eslint . --fix
   "jest": {
     "transform": {
       "^.+\\.js$": "babel-jest"
-    }
+    },
+    "testEnvironment": "node"
   }
 }
 ```
@@ -244,12 +253,18 @@ git commit -m "Added matrix builds and linting"
 git push origin main
 ```
 
-✅ Final Check
-Go to GitHub → Actions and verify:
+## ✅ Final Check
+
++ Go to GitHub → Actions and verify:
+
 ✅ Linting runs successfully
+
 ✅ Tests pass on all Node.js versions
+
 ✅ Deployment happens only if tests pass
-Check your AWS EC2 app:
+
+
+**Check your AWS EC2 app on your Terminal:**
 ```
 curl http://<your-ec2-public-ip>:3000/
 ```
