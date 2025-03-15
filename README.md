@@ -246,6 +246,55 @@ http://localhost:3000/
 npm run build
 ```
 
+**Updated GitHub Actions Workflow (CI)
+```
+name: Node.js CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      
+      # Caching node_modules to speed up the workflow
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ matrix.node-version }}-node_modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node-version }}-node_modules-
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Optional: Run linting before tests (for code quality checks)
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+```
+
 🔹 6.4 Push Changes
 ```
 git add .
