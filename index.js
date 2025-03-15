@@ -1,15 +1,19 @@
-const express = require('express');
-const app = express();
-const port = process.env.PORT || 3000;
+import express from "express";
+import dotenv from "dotenv";
 
-app.get('/', (req, res) => {
-    res.send("Hello World!");
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get("/", (req, res) => {
+  res.send("Hello World!"); // Remove the comma
 });
 
-if (require.main === module) {
-    app.listen(port, () => {
-        console.log(`App listening at http://localhost:${port}`);
-    });
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 }
 
-module.exports = app; // Export app for testing
+export default app;

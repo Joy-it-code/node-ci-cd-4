@@ -114,7 +114,7 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ci-cd-key
         chmod 600 ~/.ssh/ci-cd-key
-        ssh-keyscan 98.81.255.24 >> ~/.ssh/known_hosts
+        ssh-keyscan <your-ec2-public-ip> >> ~/.ssh/known_hosts
 
     - name: Deploy to AWS EC2
       uses: appleboy/ssh-action@master
@@ -123,7 +123,7 @@ jobs:
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          cd ~/node-ci-cd-3 || git clone https://github.com/Joy-it-code/node-ci-cd.git ~/node-ci-cd-3
+          cd ~/node-ci-cd-3 || git clone https://github.com/Joy-it-code/node-ci-cd-3.git ~/node-ci-cd-3
           cd ~/node-ci-cd-3
           git pull origin main
           npm install
@@ -178,27 +178,26 @@ To auto-fix issues locally before committing:
 npx eslint . --fix
 ```
 
-## 📝 Step 5: Add .eslintrc.json Configuration
-**Modify .eslintrc.json:**
+## 📝 Step 5: Update jest section in package.json
+**Modify package.json**
 ```
-export default [
-  {
-    files: ["**/*.js"], // Specify the files to lint
-    languageOptions: {
-      ecmaVersion: "latest", // Set the ECMAScript version
-      globals: {
-        browser: true, // Add global variables
-        node: true,
-        es2021: true, // Other environments if needed
-      },
-    },
-    rules: {
-      "no-unused-vars": "warn", // Example of setting rules
-      "no-console": "off",
-      "semi": ["error", "always"],
-    },
+},
+  "devDependencies": {
+    "@babel/core": "^7.26.10",
+    "@babel/preset-env": "^7.26.9",
+    "@eslint/js": "^9.22.0",
+    "babel-jest": "^29.7.0",
+    "eslint": "^8.57.1",
+    "globals": "^16.0.0",
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
   },
-];
+  "jest": {
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    }
+  }
+}
 ```
 
 ## 🔬 Step 6: Test Everything Locally Before Pushing
@@ -216,7 +215,11 @@ npx eslint . --fix
 ```
 npx eslint .
 ```
+**Install dotenv:**
+```
+npm install dotenv
 
+```
 🔹 6.2 Run Tests
 ```
 npm test
@@ -252,7 +255,7 @@ curl http://<your-ec2-public-ip>:3000/
 ```
 🎉 If you see "Hello World!", your pipeline is working perfectly!
 
-Conclusion
+## Conclusion
 
 This project automates CI/CD for Node.js apps with GitHub Actions and AWS EC2, ensuring reliable and efficient delivery.
 

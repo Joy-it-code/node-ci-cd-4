@@ -1,29 +1,43 @@
 {
-  "name": "ci-cd",
+  "name": "node-ci-cd-3",
   "version": "1.0.0",
   "description": "This project demonstrates a Continuous Integration (CI) and Continuous Deployment (CD) pipeline for a Node.js application using GitHub Actions and AWS EC2. The goal is to automate the testing, building, and deployment process to ensure reliable and efficient software delivery.",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint . --fix"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Joy-it-code/node-ci-cd-2.git"
+    "url": "https://github.com/Joy-it-code/node-ci-cd-3.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Joy-it-code/node-ci-cd-2/issues"
+    "url": "https://github.com/Joy-it-code/node-ci-cd-3/issues"
   },
-  "homepage": "https://github.com/Joy-it-code/node-ci-cd-2#readme",
+  "homepage": "https://github.com/Joy-it-code/node-ci-cd-3#readme",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "pm2": "^5.4.3"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.10",
+    "@babel/preset-env": "^7.26.9",
+    "@eslint/js": "^9.22.0",
+    "babel-jest": "^29.7.0",
+    "eslint": "^8.57.1",
+    "globals": "^16.0.0",
     "jest": "^29.7.0",
     "supertest": "^7.0.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    }
   }
 }

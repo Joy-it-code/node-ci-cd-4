@@ -1,5 +1,5 @@
-const request = require("supertest");
-const app = require("../index");  // Ensure your Express app is exported in index.js
+import request from "supertest";
+import app from "../index.js";  // Use `.js` extension
 
 describe("GET /", () => {
     it("should return 'Hello World!'", async () => {
