@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 20.x] # Test across multiple Node.js versions
+        node-version: [18.x, 20.x, 22.x] # Test across multiple Node.js versions
 
     steps:
     - name: Checkout Repository
@@ -22,7 +22,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
-    - name: Cache Node Modules
+    - name: Cache dependencies
       uses: actions/cache@v4
       with:
         path: ~/.npm
