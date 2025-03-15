@@ -1,6 +1,6 @@
 export default [
   {
-    files: ["**/*.js"], // Specify the file types you want ESLint to process
+    files: ["**/*.js"],
     languageOptions: {
       ecmaVersion: "latest", // Set the ECMAScript version
     },
