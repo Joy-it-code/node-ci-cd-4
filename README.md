@@ -144,7 +144,12 @@ http://18.208.177.81:3000
 ![](./img/2b.localhost.png)
 ![](./img/2d.ec2browser.png)
 
----
+**On EC2 Instance to Monitor log**
+```
+pm2 logs index.js
+pm2 list
+```
+
 
 **Test Your Deployment**
 Push changes to main branch
