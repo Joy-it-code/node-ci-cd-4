@@ -12,19 +12,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Deploy to AWS
+      # 🛠 Setup SSH Key Properly
+      - name: Set up SSH Key
         run: |
-          ssh -i ~/.ssh/ci-cd-key ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" | tr -d '\r' > ~/.ssh/ci-cd-key
+          chmod 600 ~/.ssh/ci-cd-key
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      # 🚀 Use appleboy SSH action for Deployment
+      - name: Deploy to AWS EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
             cd ~/node-ci-cd-4 || git clone https://github.com/Joy-it-code/node-ci-cd-4.git ~/node-ci-cd-4
             cd ~/node-ci-cd-4
             git pull origin main
             npm install
             pm2 restart index.js || pm2 start index.js --name "node-app"
-          EOF
