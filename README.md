@@ -117,6 +117,8 @@ This workflow deploys the latest code to AWS when changes are pushed to main.
 npm test
 node index.js
 curl http://18.208.177.81:3000
+aws configure
+aws sts get-caller-identity
 ```
 ![](./img/1.npm.png)
 ![](./img/2a.node.index.png)
