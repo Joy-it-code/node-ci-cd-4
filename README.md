@@ -131,7 +131,9 @@ http://18.208.177.81:3000
 ![](./img/2b.localhost.png)
 ![](./img/2d.ec2browser.png)
 
-🛠 Troubleshooting & Resources
+---
+## 🛠 Troubleshooting & Resources
+
 ✅ GitHub Actions Logs – Check logs for error details.
 
 ✅ YAML Validator – Validate workflow files using YAML Lint.
@@ -139,9 +141,15 @@ http://18.208.177.81:3000
 ✅ GitHub Secrets – Ensure AWS credentials and SSH keys are correctly set.
 
 ✅ PM2 Logs – Run pm2 logs on the server to debug issues.
+---
 
 
+---
+## 🎯 Conclusion
+By following this guide, I have successfully set up a CI/CD pipeline to automate the deployment of a Node.js application to AWS EC2 using GitHub Actions. This pipeline ensures that every change pushed to the main branch undergoes automated testing, versioning, and seamless deployment, reducing manual effort and minimizing deployment risks.
+---
 
-**Author: Joy Nwatuzor**
 
-**🎉 Happy Coding & Automating! 🚀**
+  **Author: Joy Nwatuzor** 
+
+**🎉Happy Coding & Automating! 🚀**
