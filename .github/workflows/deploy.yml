@@ -8,19 +8,28 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 🛠 Setup SSH Key Properly
+      # ✅ Configure AWS Credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      # ✅ Set up SSH Key
       - name: Set up SSH Key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" | tr -d '\r' > ~/.ssh/ci-cd-key
           chmod 600 ~/.ssh/ci-cd-key
-          ssh-keyscan 18.208.177.81 ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # 🚀 Use appleboy SSH action for Deployment
+      # 🚀 Deploy to AWS EC2
       - name: Deploy to AWS EC2
         uses: appleboy/ssh-action@master
         with:
@@ -28,8 +37,22 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # Navigate to project folder or clone if missing
             cd ~/node-ci-cd-4 || git clone https://github.com/Joy-it-code/node-ci-cd-4.git ~/node-ci-cd-4
             cd ~/node-ci-cd-4
+
+            # Pull latest changes
             git pull origin main
-            npm install
-            pm2 restart index.js || pm2 start index.js --name "node-app"
+
+            # Install dependencies efficiently
+            npm ci
+
+            # Ensure PM2 is installed
+            if ! command -v pm2 &> /dev/null
+            then
+                echo "PM2 not found! Installing..."
+                npm install -g pm2
+            fi
+
+            # Restart the app using PM2
+            pm2 restart node-app || pm2 start index.js --name "node-app"

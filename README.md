@@ -78,63 +78,64 @@ I use GitHub Actions to deploy to AWS EC2.
 
 **AWS Deployment Workflow**
 ```
-name: Node.js CI/CD Pipeline
+name: Deploy to AWS EC2
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x, 18.x, 20.x]
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+      # ✅ Configure AWS Credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ matrix.node-version }}-node_modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-${{ matrix.node-version }}-node_modules-
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run ESLint
-        run: npm run lint
-
-      - name: Run tests
-        run: npm test
-
-      # Add SSH key and set up known hosts
-      - name: Set up SSH key
+      # ✅ Set up SSH Key
+      - name: Set up SSH Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.CI_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H your-server-ip-or-hostname >> ~/.ssh/known_hosts
+          echo "${{ secrets.EC2_SSH_KEY }}" | tr -d '\r' > ~/.ssh/ci-cd-key
+          chmod 600 ~/.ssh/ci-cd-key
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy to Server (SSH)
-        run: |
-          ssh -i ~/.ssh/id_rsa ubuntu@your-server-ip-or-hostname << 'EOF'
-          # Your deployment commands here
-          EOF
+      # 🚀 Deploy to AWS EC2
+      - name: Deploy to AWS EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Navigate to project folder or clone if missing
+            cd ~/node-ci-cd-4 || git clone https://github.com/Joy-it-code/node-ci-cd-4.git ~/node-ci-cd-4
+            cd ~/node-ci-cd-4
+
+            # Pull latest changes
+            git pull origin main
+
+            # Install dependencies efficiently
+            npm ci
+
+            # Ensure PM2 is installed
+            if ! command -v pm2 &> /dev/null
+            then
+                echo "PM2 not found! Installing..."
+                npm install -g pm2
+            fi
+
+            # Restart the app using PM2
+            pm2 restart node-app || pm2 start index.js --name "node-app"
 ```
 This workflow deploys the latest code to AWS when changes are pushed to main.
 
