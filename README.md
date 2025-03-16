@@ -168,7 +168,7 @@ git push origin main
 
 ---
 ## 🎯 Conclusion
-By following this guide, I have successfully set up a CI/CD pipeline to automate the deployment of a Node.js application to AWS EC2 using GitHub Actions. This pipeline ensures that every change pushed to the main branch undergoes automated testing, versioning, and seamless deployment, reducing manual effort and minimizing deployment risks.
+I have successfully set up a CI/CD pipeline to automate the deployment of a Node.js application to AWS EC2 using GitHub Actions. This pipeline ensures that every change pushed to the main branch undergoes automated testing, versioning, and seamless deployment, reducing manual effort and minimizing deployment risks.
 ---
 
 
